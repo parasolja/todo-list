@@ -83,23 +83,23 @@
 		// Generate an ID
 	    var newId = "";
 	    var charset = "0123456789";
-	    let checkForDuplicate = false
+	    let checkIfUnique = false
 
 	  ////////////////////////////////////////////// Here I used Do... while + for... of
 
 	    do{
-	    	checkForDuplicate = false
+	    	checkIfUnique = false
 	    	for (var i = 0; i < 6; i++) {
      			newId += charset.charAt(Math.floor(Math.random() * charset.length));
      		}
      		for (let todo of todos){
      			if(todo.id === newId){
      				newId = ''
-     				checkForDuplicate = true
+     				checkIfUnique = true
      				break
      			}
      		}
-	    } while (checkForDuplicate)
+	    } while (checkIfUnique)
 
 		// If an ID was actually given, find the item and update each property
 
