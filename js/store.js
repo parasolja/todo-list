@@ -1,4 +1,3 @@
-/*jshint eqeqeq:false */
 (function (window) {
 	'use strict';
 
@@ -80,46 +79,27 @@
 
 		callback = callback || function () {};
 
-		// Generate an ID
-	    var newId = "";
-	    var charset = "0123456789";
-	    let checkForDuplicate = false
-
-	  ////////////////////////////////////////////// Here I used Do... while + for... of
-
-	    do{
-	    	checkForDuplicate = false
-	    	for (var i = 0; i < 6; i++) {
-     			newId += charset.charAt(Math.floor(Math.random() * charset.length));
-     		}
-     		for (let todo of todos){
-     			if(todo.id === newId){
-     				newId = ''
-     				checkForDuplicate = true
-     				break
-     			}
-     		}
-	    } while (checkForDuplicate)
-
 		// If an ID was actually given, find the item and update each property
-
 		if (id) {
-			for (var i = 0; i < todos.length; i++) {
-				if (todos[i].id === id) {
-					for (var key in updateData) {
-						todos[i][key] = updateData[key];
-					}
-					break;
-				}
+
+			var changedObj = todos.find(o => o.id === id); // find object that has been changed
+
+			for (var key in updateData) { // for each key in updateData, update object in todos array
+				changedObj[key] = updateData[key];
 			}
 
 			localStorage[this._dbName] = JSON.stringify(data);
 			callback.call(this, todos);
 		} else {
+			// Generate an ID
+			var newId = "";
+			var timestamp = Date.now(); //  returns the number of milliseconds elapsed since January 1, 1970
+			var randomNumber = Math.random()/timestamp; // divide random number by timestamp to ensure unique number
+
+			newId = randomNumber.toString().substr(2, 6); //convert random number to string, grab first 6 characters after the decimal
 
     		// Assign an ID
 			updateData.id = parseInt(newId);
-
 			todos.push(updateData);
 			localStorage[this._dbName] = JSON.stringify(data);
 			callback.call(this, [updateData]);
@@ -135,19 +115,10 @@
 	Store.prototype.remove = function (id, callback) {
 		var data = JSON.parse(localStorage[this._dbName]);
 		var todos = data.todos;
-		var todoId;
+		var itemToDelete = todos.find(o => o.id === id); // find object with passed in ID
+		var indexOfItemToDelete = todos.indexOf(itemToDelete); // get index of found object
 
-		for (var i = 0; i < todos.length; i++) {
-			if (todos[i].id == id) {
-				todoId = todos[i].id;
-			}
-		}
-
-		for (var i = 0; i < todos.length; i++) {
-			if (todos[i].id == todoId) {
-				todos.splice(i, 1);
-			}
-		}
+		todos.splice(indexOfItemToDelete, 1); // remove object from todos array
 
 		localStorage[this._dbName] = JSON.stringify(data);
 		callback.call(this, todos);
